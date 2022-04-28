@@ -1,0 +1,26 @@
+node{
+    echo "Job Name is ${env.JOB_NAME}"
+    echo "Jenkins Node Name is ${env.NODE_NAME}"
+    echo "Jenkins Url ${env.JENKINS_URL}"
+    def MavenHome= tool name: "Maven3.8.5"
+ //Getting source code from Github repo   
+ stage("Gettingsourcecodefromrepo"){
+     git branch: 'development', credentialsId: 'Github_crendtials', url: 'https://github.com/mahari2526/maven-web-application.git'
+     
+ }
+ //build the source code by using maven build tool
+ stage("build"){
+     sh "${MavenHome}/bin/mvn clean package"
+ }
+ stage("ExecutesonarqubeReport"){
+     sh "${MavenHome}/bin/mvn sonar:sonar"
+ }
+ stage("uploadartifactorytoNexus"){
+     sh "${MavenHome}/bin/mvn deploy"
+ }
+ stage("Deploy application to tomcat server"){
+     sshagent(['6eadb284-5d05-44e5-b8be-f06e022c1723']) {
+    sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@52.66.130.167:/opt/apache-tomcat-9.0.62/webapps/"
+}
+ }
+}
