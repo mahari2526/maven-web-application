@@ -3,6 +3,7 @@ node{
     echo "Jenkins Node Name is ${env.NODE_NAME}"
     echo "Jenkins Url ${env.JENKINS_URL}"
     def MavenHome= tool name: "Maven3.8.5"
+    properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5')), [$class: 'JobLocalConfiguration', changeReasonComment: '']])
  //Getting source code from Github repo   
  stage("Gettingsourcecodefromrepo"){
      git branch: 'development', credentialsId: 'Github_crendtials', url: 'https://github.com/mahari2526/maven-web-application.git'
